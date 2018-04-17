@@ -47,6 +47,8 @@ function initTestScene()
 
 function renderTestScene()
 {
+    let distance = 2;
+
     gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexBuffer);
     gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false,0,0) ;
     gl.enableVertexAttribArray(positionLocation);
@@ -56,5 +58,33 @@ function renderTestScene()
     gl.enableVertexAttribArray(colorLocation);
 
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeIndexBuffer);
+
+
+    let sceneMatrixBackup = camera.sceneMatrix;
+
+    camera.sceneMatrix = matrixMultiply(sceneMatrixBackup, makeTranslationMatrix(0, distance, 0));
+    camera.writeModelViewMatrix();
     gl.drawElements(gl.TRIANGLES, cubeIndices.length, gl.UNSIGNED_SHORT, 0); //LINE_STRIP
+
+    camera.sceneMatrix = matrixMultiply(sceneMatrixBackup, makeTranslationMatrix(0, -distance, 0));
+    camera.writeModelViewMatrix();
+    gl.drawElements(gl.TRIANGLES, cubeIndices.length, gl.UNSIGNED_SHORT, 0); //LINE_STRIP
+
+    camera.sceneMatrix = matrixMultiply(sceneMatrixBackup, makeTranslationMatrix(distance, 0, 0));
+    camera.writeModelViewMatrix();
+    gl.drawElements(gl.TRIANGLES, cubeIndices.length, gl.UNSIGNED_SHORT, 0); //LINE_STRIP
+
+    camera.sceneMatrix = matrixMultiply(sceneMatrixBackup, makeTranslationMatrix(-distance, 0, 0));
+    camera.writeModelViewMatrix();
+    gl.drawElements(gl.TRIANGLES, cubeIndices.length, gl.UNSIGNED_SHORT, 0); //LINE_STRIP
+
+    camera.sceneMatrix = matrixMultiply(sceneMatrixBackup, makeTranslationMatrix(0, 0, distance));
+    camera.writeModelViewMatrix();
+    gl.drawElements(gl.TRIANGLES, cubeIndices.length, gl.UNSIGNED_SHORT, 0); //LINE_STRIP
+
+    camera.sceneMatrix = matrixMultiply(sceneMatrixBackup, makeTranslationMatrix(0, 0, -distance));
+    camera.writeModelViewMatrix();
+    gl.drawElements(gl.TRIANGLES, cubeIndices.length, gl.UNSIGNED_SHORT, 0); //LINE_STRIP
+
+    camera.sceneMatrix = sceneMatrixBackup;
 }

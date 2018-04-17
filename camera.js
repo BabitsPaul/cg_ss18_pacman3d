@@ -57,8 +57,8 @@ let camera = {
             thisr.userControlled = true;
 
             switch (ev.code){
-                case move_forward:      thisr.moveZ = -1;     break;
-                case move_backward:     thisr.moveZ = 1;    break;
+                case move_forward:      thisr.moveZ = 1;     break;
+                case move_backward:     thisr.moveZ = -1;    break;
                 case move_left:         thisr.moveX = 1;    break;
                 case move_right:        thisr.moveX = -1;     break;
 
@@ -80,8 +80,8 @@ let camera = {
         document.onmousemove = function (ev) {
             if(!thisr.movementOnMousePress || thisr.mousePressed)
             {
-                thisr.rotationX += ev.movementY * (thisr.mouseInverted ? 1 : -1);
-                thisr.rotationY += ev.movementX * (thisr.mouseInverted ? 1 : -1);
+                thisr.rotationX += ev.movementY * (thisr.mouseInverted ? -1 : 1);
+                thisr.rotationY += ev.movementX * (thisr.mouseInverted ? -1 : 1);
             }
         };
 
@@ -104,9 +104,9 @@ let camera = {
     update: function(dt)
     {
         var tmp = this.sceneMatrix;
-        tmp = matrixMultiply(makeTranslationMatrix(this.moveX * this.movementScale * dt, 0, this.moveZ * this.movementScale * dt), tmp);
         tmp = matrixMultiply(makeXRotationMatrix(this.rotationX * this.rotationScale * dt), tmp);
         tmp = matrixMultiply(makeYRotationMatrix(this.rotationY * this.rotationScale * dt), tmp);
+        tmp = matrixMultiply(makeTranslationMatrix(this.moveX * this.movementScale * dt, 0, this.moveZ * this.movementScale * dt), tmp);
 
         this.sceneMatrix = tmp;
 
