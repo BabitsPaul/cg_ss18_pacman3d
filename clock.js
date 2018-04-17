@@ -3,6 +3,36 @@
 //
 
 /**
+ * Builds a new clockreact object that will call a function
+ * on every update with the delta_time as parameter.
+ *
+ * @param callable the function to execute on every update
+ * @constructor
+ */
+function ClockReact(callable){
+    this.callable = callable;
+    this.disabled = false;
+}
+
+/**
+ * Called on every update
+ *
+ * @param dt time since the last update
+ */
+ClockReact.prototype.update = function(dt)
+{
+    this.callable(dt);
+};
+
+/**
+ * Terminates the ClockReact
+ */
+ClockReact.prototype.terminate = function()
+{
+    this.disabled = true;
+};
+
+/**
  * Builds a new clockreact-object.
  *
  * @param time time until the specified action will be triggered
@@ -24,7 +54,7 @@ function CummulativeClockReact(time, react, repeat){
  * returns true if the object is still active, else false
  *
  * @param dt the time passed since the last call
- * @returns true, if the object is still alive
+ * @returns boolean if the object is still alive
  */
 CummulativeClockReact.prototype.update = function(dt){
     if(this.disabled)
@@ -32,7 +62,7 @@ CummulativeClockReact.prototype.update = function(dt){
 
     this.bygone += dt;
 
-    if(this.bygone >= time)
+    if(this.bygone >= this.time)
     {
         this.react();
         this.bygone = 0;
@@ -41,88 +71,122 @@ CummulativeClockReact.prototype.update = function(dt){
     }
 
     return true;
-}
+};
 
 /**
  * Terminates the clockreact-object. It will be removed from the list of active
- * react-objects on the next tick()
+ * react-objects on the next update()
  */
-CumulativeClockReact.prototype.terminate = function(){
+CummulativeClockReact.prototype.terminate = function(){
     this.disabled = true;
-}
+};
 
-/* Time at which the last frame started rendering */
-var old_time = 0;
+let clock = {
+    /* Time at which the last frame started rendering */
+    oldTime: 0,
 
-/* Time since last tick. Updated by tick() */
-var delta_time = 0;
+    /* Time since last update. Updated by update() */
+    deltaTime: 0,
 
-/* True if the clock is currently not enabled. A disabled
- * clock means that animations will remain static. */
-var clock_stopped = true;
+    /* True if the clock is currently not enabled. A disabled
+    * clock means that animations will remain static. */
+    clockStopped: true,
 
-/* Holds a list of currently active clock-reacts. */
-var clockreact_list = [];
 
-/** should be called before animating a frame.
- * Updates the time-difference between two frames,
- * if the clock is enabled. Otherwise it remains 0 */
-function tick()
-{
-    new_time = new Date().getTime();
+    /* Holds a list of currently active clock-reacts. */
+    clockReactList: [],
 
-    if(old_time == 0)
-        old_time = new_time;
+    /** should be called before animating a frame.
+     * Updates the time-difference between two frames,
+     * if the clock is enabled. Otherwise it remains 0
+     *
+     * @param time time at which this current call is done
+     */
 
-    delta_time = new_time - old_time;
-    old_time = new_time;
+    update: function(time) {
+        // get current time from a date-object, if not provided as parameter
+        // beware of potential interference (?)
+        if(typeof time === 'undefined')
+            time = new Date().getTime();
 
-    clockreact_list = clockreact_list.filter(react => react.update(delta_time));
-}
+        if (this.oldTime === 0)
+            this.oldTime = time;
 
-/** Returns the time since the last frame was rendered.
- * Updated on each call of tick()
- *
- * @return the time passed since the last tick in ms, or 0 if the clock is disabled.
- */
-function get_delta()
-{
-    return delta_time;
-}
+        this.deltaTime = time - this.oldTime;
+        this.oldTime = time;
 
-/** Starts the clock, if it previously was stopped.
- * In it's initial state the clock is disabled */
-function start_clock()
-{
-    if(!clock_stopped)
-        return;
+        this.clockReactList = this.clockReactList.filter(react => react.update(this.deltaTime));
+    },
 
-    old_time = new Date().getTime();
-    clock_stopped = false;
-}
+    /** Starts the clock, if it previously was stopped.
+     * In it's initial state the clock is disabled */
+    startClock: function()
+    {
+        if(!this.clockStopped)
+            return;
 
-/** Stops the clock. If the clock is stopped, calls to tick() will be ignored,
- * thus effectively stalling any timedependant animations */
-function stop_clock()
-{
-    if(clock_stopped)
-        return;
+        this.oldTime = 0;            // reset oldTime for a fresh restart of the clock
+        this.clockStopped = false;
+    },
 
-    delta_time = 0;
-}
+    /** Stops the clock. If the clock is stopped, calls to update() will be ignored,
+     * thus effectively stalling any timedependant animations */
+    stopClock: function()
+    {
+        if(this.clockStopped)
+            return;
 
-/**
- * Adds the specified clockreact-object to the list of active
- * react-objects.
- *
- * @param time time after which the action should be trigger (in ms)
- * @param react action to trigger
- * @param repeat true if the action should be repeated.
- * @return the CummulativeClockReact associated with this action.
- */
-function addClockReaction(time, react, repeat)
-{
-    var r = new CummulativeClockReact(time, react, repeat)
-    clockreact_list.push(r);
-    return r;
-}
+        this.deltaTime = 0;
+    },
+
+    /**
+     * Adds the specified clockreact-object to the list of active
+     * react-objects.
+     *
+     * @param time time after which the action should be trigger (in ms)
+     * @param react action to trigger
+     * @param repeat true if the action should be repeated.
+     * @return CummulativeClockReact CummulativeClockReact associated with this action.
+     */
+    registerCummulativeClockReaction: function(time, react, repeat)
+    {
+        let r = new CummulativeClockReact(time, react, repeat);
+        this.clockReactList.push(r);
+        return r;
+    },
+
+    /**
+     * Adds the specified clockreact-object to the list of active react-objects
+     *
+     * @param react action to be taken every update
+     * @returns {ClockReact} the clockreact-object associated with the task
+     */
+    registerClockReaction: function(react)
+    {
+        let r = new ClockReact(react);
+        this.clockReactList.push(r);
+        return r;
+    },
+
+    /**
+     * Registers an updateable with the clockreact-list. Any object
+     * registered with this method must supply an update-list that returns
+     * a boolean-value!!! This is the preferable method for updating objects
+     *
+     * @param updateable the updateable to register
+     */
+    registerUpdateable: function(updateable)
+    {
+        this.clockReactList.push(updateable);
+    },
+
+    /**
+     * Initializes the clock
+     */
+    init: function()
+    {
+        this.startClock();
+    }
+};
+
+
