@@ -11,6 +11,10 @@ let camera = {
     viewDepth : 100,            // maximum-depth at which objects are still visible
     movementOnMousePress : true,// only rotate the camera if the left-button is pressed
     mouseInverted: false,       // invert the mouse
+    moveForward : "KeyW",       // keyboard forward-movement
+    moveBackward : "KeyS",      // keyboard backward-movement
+    moveLeft : "KeyA",          // keyboard left-movement
+    moveRight : "KeyD",         // keyboard right-movement
 
     /* screen and view-matrix */
     sceneMatrix: makeIdentityMatrix(),
@@ -48,32 +52,27 @@ let camera = {
         // register camera on the clock to receive updates
         clock.registerUpdateable(this);
 
-        let move_forward = "KeyW";
-        let move_backward = "KeyS";
-        let move_left = "KeyA";
-        let move_right = "KeyD";
-
         document.onkeydown = function (ev) {
             thisr.userControlled = true;
 
             switch (ev.code){
-                case move_forward:      thisr.moveZ = 1;     break;
-                case move_backward:     thisr.moveZ = -1;    break;
-                case move_left:         thisr.moveX = 1;    break;
-                case move_right:        thisr.moveX = -1;     break;
+                case thisr.moveForward:        thisr.moveZ = 1;     break;
+                case thisr.moveBackward:       thisr.moveZ = -1;    break;
+                case thisr.moveLeft:           thisr.moveX = 1;    break;
+                case thisr.moveRight:          thisr.moveX = -1;     break;
 
-                default:                thisr.userControlled = false;
+                default:                        thisr.userControlled = false;
             }
         };
 
         document.onkeyup = function (ev) {
             switch (ev.code){
-                case move_backward:
-                case move_forward:      thisr.moveZ = 0;     break;
-                case move_left:
-                case move_right:        thisr.moveX = 0;     break;
+                case thisr.moveBackward:
+                case thisr.moveForward:        thisr.moveZ = 0;     break;
+                case thisr.moveLeft:
+                case thisr.moveRight:          thisr.moveX = 0;     break;
 
-                default:                thisr.userControlled = false;
+                default:                        thisr.userControlled = false;
             }
         };
 
