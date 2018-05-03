@@ -102,12 +102,14 @@ let camera = {
      */
     update: function(dt)
     {
-        var tmp = this.sceneMatrix;
+        var tmp = this.viewMatrix;
         tmp = matrixMultiply(makeXRotationMatrix(this.rotationX * this.rotationScale * dt), tmp);
         tmp = matrixMultiply(makeYRotationMatrix(this.rotationY * this.rotationScale * dt), tmp);
         tmp = matrixMultiply(makeTranslationMatrix(this.moveX * this.movementScale * dt, 0, this.moveZ * this.movementScale * dt), tmp);
 
-        this.sceneMatrix = tmp;
+        this.viewMatrix = tmp;
+
+		// TODO extract position and orientation => generate lookat
 
         // reset rotation (cumulative)
         this.rotationX = 0;

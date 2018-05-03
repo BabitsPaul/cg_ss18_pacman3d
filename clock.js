@@ -2,84 +2,84 @@
 // Clock
 //
 
-/**
- * Builds a new clockreact object that will call a function
- * on every update with the delta_time as parameter.
- *
- * @param callable the function to execute on every update
- * @constructor
- */
-function ClockReact(callable){
-    this.callable = callable;
-    this.disabled = false;
-}
-
-/**
- * Called on every update
- *
- * @param dt time since the last update
- */
-ClockReact.prototype.update = function(dt)
+class ClockReact
 {
-    this.callable(dt);
-};
-
-/**
- * Terminates the ClockReact
- */
-ClockReact.prototype.terminate = function()
-{
-    this.disabled = true;
-};
-
-/**
- * Builds a new clockreact-object.
- *
- * @param time time until the specified action will be triggered
- * @param react the action that should be performed once the time is up
- * @param repeat determines whether the counter will cycle.
- * @constructor
- */
-function CummulativeClockReact(time, react, repeat){
-    this.time = time;       // time until the action should be triggered
-    this.bygone = 0;        // time passed, since the react started
-    this.react = react;     // executed, if the specified time has run out
-    this.repeat = repeat;   // start over or terminate
-    this.disabled = false;  // if true, the react will automatically terminate on the next call
-}
-
-/**
- * Updates the clockreact-object. If the passed time is
- * beyond @c{this.time}, an action will be triggered.
- * returns true if the object is still active, else false
- *
- * @param dt the time passed since the last call
- * @returns boolean if the object is still alive
- */
-CummulativeClockReact.prototype.update = function(dt){
-    if(this.disabled)
-        return false;
-
-    this.bygone += dt;
-
-    if(this.bygone >= this.time)
+    /**
+     * Builds a new clockreact object that will call a function
+     * on every update with the delta_time as parameter.
+     *
+     * @param callable the function to execute on every update
+     * @constructor
+     */
+    constructor(callable)
     {
-        this.react();
-        this.bygone = 0;
-
-        return this.repeat;
+        this.callable = callable;
+        this.disabled = false;
     }
 
-    return true;
-};
+    /**
+     * Called on every update
+     *
+     * @param dt time since the last update
+     */
+    update(dt)
+    {
+        this.callable(dt);
+    }
 
-/**
- * Terminates the clockreact-object. It will be removed from the list of active
- * react-objects on the next update()
- */
-CummulativeClockReact.prototype.terminate = function(){
-    this.disabled = true;
-};
+    /**
+     * Terminates the ClockReact
+     */
+    terminate()
+    {
+        this.disabled = true;
+    }
+}
+
+class CummulativeClockReact extends ClockReact
+{
+    /**
+     * Builds a new clockreact-object.
+     *
+     * @param time time until the specified action will be triggered
+     * @param react the action that should be performed once the time is up
+     * @param repeat determines whether the counter will cycle.
+     * @constructor
+     */
+    constructor(time, react, repeat){
+        super(react);
+
+        this.time = time;       // time until the action should be triggered
+        this.bygone = 0;        // time passed, since the react started
+        this.repeat = repeat;   // start over or terminate
+        this.disabled = false;  // if true, the react will automatically terminate on the next call
+    }
+
+    /**
+     * Updates the clockreact-object. If the passed time is
+     * beyond @c{this.time}, an action will be triggered.
+     * returns true if the object is still active, else false
+     *
+     * @param dt the time passed since the last call
+     * @returns boolean if the object is still alive
+     */
+    update(dt){
+        if(this.disabled)
+            return false;
+
+        this.bygone += dt;
+
+        if(this.bygone >= this.time)
+        {
+            this.callable();
+            this.bygone = 0;
+
+            return this.repeat;
+        }
+
+        return true;
+    };
+}
 
 let clock = {
     /* Time at which the last frame started rendering */
