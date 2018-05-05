@@ -56,7 +56,6 @@ let world = {
         // build basis of scene-graph
         this.rootNode.append(this.sceneNode);
         this.rootNode.append(this.staticSceneNode);
-        this.staticSceneNode.append(testSceneGraphRoot);
 
         // init scenegraph-context
         this.sg_context.gl = gl;
@@ -76,8 +75,6 @@ let world = {
         // render scene
         this.rootNode.render(this.sg_context);                  // render scene
     }
-
-
 };
 
 /**

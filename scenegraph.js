@@ -168,15 +168,9 @@ class SceneGraphRootNode
     render(context)
     {
         context.gl.useProgram(context.shader);
-        camera.writeProjectionMatrix(context);
+        context.gl.uniformMatrix4fv(projectionLocation, false, new Float32Array(context.projectionMatrix));
         camera.writeModelViewMatrix();
 
         super.render(context);
     }
-}
-
-class CameraSceneGraphNode
-    extends SceneGraphNode
-{
-
 }

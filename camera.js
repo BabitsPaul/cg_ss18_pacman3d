@@ -32,11 +32,6 @@ let camera = {
     userControlled: false,
     mousePressed: false,
 
-    writeProjectionMatrix: function(context)
-    {
-        gl.uniformMatrix4fv(projectionLocation, false, new Float32Array(context.projectionLocation));
-    },
-
     writeModelViewMatrix: function() {
         var modelViewMatrix = matrixMultiply(this.viewMatrix, this.sceneMatrix );
         gl.uniformMatrix4fv(modelViewLocation, false, modelViewMatrix);
