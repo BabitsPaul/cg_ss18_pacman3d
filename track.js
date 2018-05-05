@@ -5,6 +5,11 @@ class InterPolationPoint
         this.xyz = xyz;
         this.t = t;
     }
+
+    compare(a, b)
+    {
+        return a.t - b.t;
+    }
 }
 
 class Track
@@ -14,24 +19,28 @@ class Track
         if(ips)
             this.ips = ips;
         else
-            ips = [];
+            this.ips = [];
 
         this.accumulatedTime = 0;
         this.active = false;
         this.index = 0;
-        this.position = (ips ? ips[0].xyz : null);
+        this.position = (this.ips.size > 0 ? this.ips[0].xyz : null);
+        this.sorted = false;
     }
 
     addInterpolationPoint(xyz, pt)
     {
-        this.ips.append(new InterPolationPoint(xyz, pt));
+        this.ips.push(new InterPolationPoint(xyz, pt));
 
         if(!this.position)
             this.position = xyz;
+
+        this.sorted = false;
     }
 
     update(dt)
     {
+        // terminate if the track is inactive
         if(!this.active)
             return false;
 
@@ -43,16 +52,15 @@ class Track
             return false;
 
         // update index if the time-frame was exceeded
-        if(this.ips[this.index + 1].t >= this.accumulatedTime)
-        {
+        if(this.ips[this.index + 1].t <= this.accumulatedTime)
             this.index++;
 
-            if(this.index == this.ips.size - 1)
-            {
-                // last point in the track => update position and terminate
-                this.position = this.ips[this.index].xyz;
-                return false;
-            }
+        // terminate if the last point of the track was reached
+        if(this.index == this.ips.length - 1)
+        {
+            // last point in the track => update position and terminate
+            this.position = this.ips[this.index].xyz;
+            return false;
         }
 
         // interpolate point
@@ -63,10 +71,12 @@ class Track
         var posB = this.ips[this.index + 1];
 
         this.position = [
-            posA[0] * (1 - prop) + posB[0] * prop,
-            posA[1] * (1 - prop) + posB[1] * prop,
-            posA[2] * (1 - prop) + posB[2] * prop
+            posA.xyz[0] * (1 - prop) + posB.xyz[0] * prop,
+            posA.xyz[0] * (1 - prop) + posB.xyz[1] * prop,
+            posA.xyz[2] * (1 - prop) + posB.xyz[2] * prop
         ];
+
+        return true;
     }
 
     start()
@@ -79,6 +89,13 @@ class Track
         this.index = 0;
         this.position = this.ips[0];
         this.accumulatedTime = 0;
+
+        // sort points if necessary
+        if(!this.sorted)
+        {
+            this.sorted = true;
+            this.ips.sort(InterPolationPoint.compare);
+        }
     }
 
     resume()

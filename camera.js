@@ -4,7 +4,7 @@
 
 // TODO use track-definition in order to move the camera
 
-let camera = {
+var camera = {
     /* Configuration */
     rotationScale : .0001,      // regulates the speed of the camera rotation
     movementScale : .0025,      // regulates the speed of the camera movement
@@ -20,8 +20,9 @@ let camera = {
     zFar : 100,                 // far clipping plane of the perspective
 
     /* screen and view-matrix */
-    sceneMatrix: makeIdentityMatrix(),
-    viewMatrix: lookAt(0, 0, 3, 0, 0, 0, 0, 1, 0),
+    sceneMatrix : makeIdentityMatrix(),
+    viewMatrix : lookAt(0, 0, 3, 0, 0, 0, 0, 1, 0),
+    projectionMatrix : null,
 
     /* current movement of the camera */
     rotationX : 0,
@@ -32,17 +33,14 @@ let camera = {
     userControlled: false,
     mousePressed: false,
 
-    writeModelViewMatrix: function() {
-        var modelViewMatrix = matrixMultiply(this.viewMatrix, this.sceneMatrix );
-        gl.uniformMatrix4fv(modelViewLocation, false, modelViewMatrix);
-    },
-
     /**
      * Sets the camera up to listen to user-input and registers it with
      * the clock to listen for ticks
      */
     init: function()
     {
+        this.projectionMatrix = makePerspectiveProjectionMatrix(this.fov, canvasWidth / canvasHeight, this.zNear, this.zFar);
+
         // this is not visible inside nested functions => reference via additional variable
         let thisr = this;
 

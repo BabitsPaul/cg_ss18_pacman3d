@@ -148,12 +148,12 @@ class ObjectSceneGraphNode extends SceneGraphNode
         gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false,0,0) ;
         gl.enableVertexAttribArray(positionLocation);
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, cubeColorBuffer);
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
         gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false,0,0) ;
         gl.enableVertexAttribArray(colorLocation);
 
         if(this.indexBuffer !== null)
-            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeIndexBuffer);
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
 
         gl.drawElements(gl.TRIANGLES, this.bufferSize, gl.UNSIGNED_SHORT, 0);
 
@@ -171,9 +171,49 @@ class SceneGraphRootNode
 
     render(context)
     {
+        // setup shader
         context.gl.useProgram(context.shader);
+
+        // backup old context
+        var tmpScene = context.sceneMatrix;
+        var tmpView = context.viewMatrix;
+        var tmpProjection = context.projectionMatrix;
+
+        // update context
+        context.sceneMatrix = camera.sceneMatrix;
+        context.viewMatrix = camera.viewMatrix;
+        context.projectionMatrix = camera.projectionMatrix;
+
+        // write projection-matrix
         context.gl.uniformMatrix4fv(projectionLocation, false, new Float32Array(context.projectionMatrix));
-        camera.writeModelViewMatrix();
+
+        // render child-nodes
+        super.render(context);
+
+        // reset context
+        context.sceneMatrix = tmpScene;
+        context.viewMatrix = tmpView;
+        context.projectionMatrix = tmpProjection;
+
+        super.render(context);
+    }
+}
+
+class TrackObjectGraphNode
+    extends TransformationSceneGraphNode
+{
+    constructor(track)
+    {
+        super();
+
+        this.track = track;
+    }
+
+    render(context)
+    {
+        var pos = this.track.position;
+
+        this.matrix = makeTranslationMatrix(pos[0], pos[1], pos[2]);
 
         super.render(context);
     }

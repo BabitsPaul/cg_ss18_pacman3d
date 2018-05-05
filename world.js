@@ -39,7 +39,7 @@ function render(dt)
     requestAnimationFrame(render);
 }
 
-let world = {
+var world = {
     sg_context : {
         gl: gl,
         sceneMatrix: mat4.create(),
@@ -54,13 +54,12 @@ let world = {
 
     init() {
         // build basis of scene-graph
-        this.rootNode.append(this.sceneNode);
         this.rootNode.append(this.staticSceneNode);
+        this.rootNode.append(this.sceneNode);
 
         // init scenegraph-context
         this.sg_context.gl = gl;
         this.sg_context.shader = shaderProgram;
-        this.sg_context.projectionMatrix = makePerspectiveProjectionMatrix(camera.fov, aspectRatio, camera.zNear, camera.zFar);
     },
 
     render(timeInMillis)
@@ -74,14 +73,24 @@ let world = {
 
         // render scene
         this.rootNode.render(this.sg_context);                  // render scene
+    },
+
+    setStaticScene(sgRoot)
+    {
+        // remove old staticScene
+        this.staticSceneNode.children = [];
+
+        // set new static scene
+        this.staticSceneNode.append(sgRoot);
     }
 };
 
 /**
- * initializes OpenGL context, compile shader, and load buffers
+ * initializes OpenGL context, compile shader, get position of uniforms and
+ * attributes and initializes components of the program
  */
-function init(resources) {
-
+function init(resources)
+{
     //create a GL context
     gl = createContext(canvasWidth, canvasHeight);
 

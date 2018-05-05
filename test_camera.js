@@ -36,6 +36,7 @@ function initTestScene()
 {
     let distance = 2;
 
+    // init buffers
     cubeVertexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, cubeVertices, gl.STATIC_DRAW);
@@ -48,6 +49,8 @@ function initTestScene()
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeIndexBuffer);
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(cubeIndices), gl.STATIC_DRAW);
 
+    // build sceneGraph
+    // testSceneGraphRoot = new SceneGraphNode();
     testSceneGraphRoot = new SceneGraphNode();
 
     var nodeA = new TransformationSceneGraphNode(makeTranslationMatrix(distance, 0, 0));
@@ -74,6 +77,17 @@ function initTestScene()
     nodeF.append(new ObjectSceneGraphNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
     testSceneGraphRoot.append(nodeF);
 
-    // TODO temporary fix to draw testscene
-    world.sceneNode.append(testSceneGraphRoot);
+    // register test-scene in the world
+    world.setStaticScene(testSceneGraphRoot);
+
+    // moveable object
+    var track = new Track();
+    track.addInterpolationPoint([-10, 0, -10], 0);
+    track.addInterpolationPoint([10, 0, -10], 1e4);
+    var node = new TrackObjectGraphNode(track);
+    node.append(new ObjectSceneGraphNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
+
+    world.sceneNode.append(node);
+
+    track.start();
 }
