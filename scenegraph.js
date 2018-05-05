@@ -138,6 +138,10 @@ class ObjectSceneGraphNode extends SceneGraphNode
 
     render(context)
     {
+        // write modelview matrix
+        var modelViewMatrix = mat4.multiply(mat4.create(), context.viewMatrix, context.sceneMatrix);
+        gl.uniformMatrix4fv(gl.getUniformLocation(context.shader, 'u_modelView'), false, modelViewMatrix);
+
         gl = context.gl;
 
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
