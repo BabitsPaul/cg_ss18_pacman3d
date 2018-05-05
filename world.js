@@ -7,13 +7,13 @@ var canvasWidth = 800;
 var canvasHeight = 800;
 var aspectRatio = canvasWidth / canvasHeight;
 
-//camera and projection settings
-var fieldOfViewInRadians = convertDegreeToRadians(30);
-
 var modelViewLocation;
 var positionLocation;
 var colorLocation;
 var projectionLocation;
+
+// scene graph-context
+
 
 //load the shader resources using a utility function
 loadResources({
@@ -23,8 +23,62 @@ loadResources({
     init(resources);
 
     //render one frame
-    render();
+    requestAnimationFrame(render);
 });
+
+/**
+ * Render-stub handles requestAnimationFrame. Otherwise rendering is handled
+ * by the node/the scenegraph.
+ *
+ * @param dt time passed since last frame in ms
+ */
+function render(dt)
+{
+    world.render(dt);
+
+    requestAnimationFrame(render);
+}
+
+let world = {
+    sg_context : {
+        gl: gl,
+        sceneMatrix: mat4.create(),
+        viewMatrix: calculateViewMatrix(),
+        projectionMatrix: null,
+        shader: null
+    },
+
+    rootNode : new SceneGraphRootNode(),
+    staticSceneNode : new SceneGraphNode(),
+    sceneNode :  new SceneGraphNode(),
+
+    init() {
+        // build basis of scene-graph
+        this.rootNode.append(this.sceneNode);
+        this.rootNode.append(this.staticSceneNode);
+        this.staticSceneNode.append(testSceneGraphRoot);
+
+        // init scenegraph-context
+        this.sg_context.gl = gl;
+        this.sg_context.shader = shaderProgram;
+        this.sg_context.projectionMatrix = makePerspectiveProjectionMatrix(camera.fov, aspectRatio, camera.zNear, camera.zFar);
+    },
+
+    render(timeInMillis)
+    {
+        clock.update(timeInMillis);
+
+        // setup for new frame
+        gl.clearColor(0.9, 0.9, 0.9, 1.0);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);    // clear buffer
+        gl.enable(gl.DEPTH_TEST);                               // enable depth-test
+
+        // render scene
+        this.rootNode.render(this.sg_context);                  // render scene
+    }
+
+
+};
 
 /**
  * initializes OpenGL context, compile shader, and load buffers
@@ -47,34 +101,8 @@ function init(resources) {
     // initialization of components
     camera.init();
     clock.init();
+    world.init();
 
     // initialization of scenes
     initTestScene();
-}
-
-/**
- * render one frame
- */
-function render(timeInMilliseconds) {
-    clock.update(timeInMilliseconds);
-
-    //set background color to light gray
-    gl.clearColor(0.9, 0.9, 0.9, 1.0);
-    //clear the buffer
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    //enable depth test to let objects in front occluse objects further away
-    gl.enable(gl.DEPTH_TEST);
-
-    //activate this shader program
-    gl.useProgram(shaderProgram);
-
-    // write out camera matrices
-    camera.writeProjectionMatrix();
-    camera.writeModelViewMatrix();
-
-    // render scene
-    renderTestScene();
-
-    //request another render call as soon as possible
-    requestAnimationFrame(render);
 }

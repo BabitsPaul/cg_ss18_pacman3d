@@ -156,3 +156,27 @@ class ObjectSceneGraphNode extends SceneGraphNode
         super.render(context);
     }
 }
+
+class SceneGraphRootNode
+    extends SceneGraphNode
+{
+    constructor()
+    {
+        super();
+    }
+
+    render(context)
+    {
+        context.gl.useProgram(context.shader);
+        camera.writeProjectionMatrix(context);
+        camera.writeModelViewMatrix();
+
+        super.render(context);
+    }
+}
+
+class CameraSceneGraphNode
+    extends SceneGraphNode
+{
+
+}

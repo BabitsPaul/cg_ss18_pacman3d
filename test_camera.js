@@ -79,6 +79,7 @@ function initTestScene()
 function renderTestScene()
 {
     // TODO replace by scene-graph rendering
+    let distance = 2;
 
     gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexBuffer);
     gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false,0,0) ;

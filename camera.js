@@ -15,6 +15,9 @@ let camera = {
     moveBackward : "KeyS",      // keyboard backward-movement
     moveLeft : "KeyA",          // keyboard left-movement
     moveRight : "KeyD",         // keyboard right-movement
+    fov : Math.PI / 3,          // field of view
+    zNear : .1,                 // close clipping plane of perspective
+    zFar : 100,                 // far clipping plane of the perspective
 
     /* screen and view-matrix */
     sceneMatrix: makeIdentityMatrix(),
@@ -29,10 +32,9 @@ let camera = {
     userControlled: false,
     mousePressed: false,
 
-    writeProjectionMatrix: function()
+    writeProjectionMatrix: function(context)
     {
-        var projectionMatrix = makePerspectiveProjectionMatrix(fieldOfViewInRadians, aspectRatio, .1, this.viewDepth);
-        gl.uniformMatrix4fv(projectionLocation, false, projectionMatrix);
+        gl.uniformMatrix4fv(projectionLocation, false, new Float32Array(context.projectionLocation));
     },
 
     writeModelViewMatrix: function() {
