@@ -64,6 +64,8 @@ var world = {
 
     render(timeInMillis)
     {
+        console.log("new frame");
+
         clock.update(timeInMillis);
 
         // setup for new frame

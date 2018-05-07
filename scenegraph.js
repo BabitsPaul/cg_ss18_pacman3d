@@ -35,7 +35,6 @@ class SceneGraphNode {
      * @param context
      */
     render(context) {
-
         //render all children
         this.children.forEach(function (c) {
             return c.render(context);
@@ -161,6 +160,13 @@ class ObjectSceneGraphNode extends SceneGraphNode
     }
 }
 
+/**
+ * Root node initializes rendering
+ *
+ * Sets up the context with data
+ * from the camera, sets the shader
+ * and writes the projectionMatrix
+ */
 class SceneGraphRootNode
     extends SceneGraphNode
 {
@@ -194,8 +200,6 @@ class SceneGraphRootNode
         context.sceneMatrix = tmpScene;
         context.viewMatrix = tmpView;
         context.projectionMatrix = tmpProjection;
-
-        super.render(context);
     }
 }
 

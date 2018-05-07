@@ -81,10 +81,6 @@ class Track
 
     start()
     {
-        // mark track as active and start it
-        this.active = true;
-        clock.registerUpdateable(this);
-
         // reset track
         this.index = 0;
         this.position = this.ips[0];
@@ -96,6 +92,10 @@ class Track
             this.sorted = true;
             this.ips.sort(InterPolationPoint.compare);
         }
+
+        // mark track as active and start it
+        this.active = true;
+        clock.registerUpdateable(this);
     }
 
     resume()
