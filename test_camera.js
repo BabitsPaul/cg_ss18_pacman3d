@@ -91,3 +91,73 @@ function initTestScene()
 
     track.start();
 }
+function init1WorldScene()
+{
+    // build sceneGraph
+    // testSceneGraphRoot = new SceneGraphNode();
+    WorldSceneGraphRoot = new SceneGraphNode();
+
+    //1 floor
+    var floor = new TransformationSceneGraphNode(matrixMultiply(makeTranslationMatrix(0, 0, 0), makeScaleMatrix(16,0.5,8)));
+    floor.append(new ObjectSceneGraphNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
+    testSceneGraphRoot.append(floor);
+
+    //2 left wall
+    var nodeC = new TransformationSceneGraphNode(matrixMultiply(makeTranslationMatrix(0,0.5,-2.25), makeScaleMatrix(16,2,0.5)));
+    nodeC.append(new ObjectSceneGraphNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
+    testSceneGraphRoot.append(nodeC);
+
+    //3 right wall
+    var nodeD = new TransformationSceneGraphNode(matrixMultiply(makeTranslationMatrix(0,0.5,2.25), makeScaleMatrix(16,2,0.5)));
+    nodeD.append(new ObjectSceneGraphNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
+    testSceneGraphRoot.append(nodeD);
+}
+
+function init2WorldScene()
+{
+    // build sceneGraph
+    // testSceneGraphRoot = new SceneGraphNode();
+    WorldSceneGraphRoot = new SceneGraphNode();
+
+    //1 floor
+    var floor = new TransformationSceneGraphNode(matrixMultiply(makeTranslationMatrix(0, 0, 0), makeScaleMatrix(16,0.5,8)));
+    floor.append(new ObjectSceneGraphNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
+    testSceneGraphRoot.append(floor);
+
+    // 2 window
+    var nodeC = new TransformationSceneGraphNode(matrixMultiply(makeTranslationMatrix(2.5,0.0,0), makeScaleMatrix(4,0.88,4)));
+    nodeC.append(new ObjectSceneGraphNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
+    testSceneGraphRoot.append(nodeC);
+}
+
+function init3WorldScene()
+{
+    // build sceneGraph
+    // testSceneGraphRoot = new SceneGraphNode();
+    WorldSceneGraphRoot = new SceneGraphNode();
+
+    // 1st step
+    var floor = new TransformationSceneGraphNode(matrixMultiply(makeTranslationMatrix(-3,0,0), makeScaleMatrix(2,2,8)));
+    floor.append(new ObjectSceneGraphNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
+    testSceneGraphRoot.append(floor);
+
+    // 2nd step
+    var nodeC = new TransformationSceneGraphNode(matrixMultiply(makeTranslationMatrix(-2,-1,0), makeScaleMatrix(2,2,8)));
+    nodeC.append(new ObjectSceneGraphNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
+    testSceneGraphRoot.append(nodeC);
+
+    // 3rd step
+    var nodeD = new TransformationSceneGraphNode(matrixMultiply(makeTranslationMatrix(-1,-2,0), makeScaleMatrix(2,2,8)));
+    nodeD.append(new ObjectSceneGraphNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
+    testSceneGraphRoot.append(nodeD);
+
+    // 4th step
+    var nodeE = new TransformationSceneGraphNode(matrixMultiply(makeTranslationMatrix(0,-3,0), makeScaleMatrix(2,2,8)));
+    nodeE.append(new ObjectSceneGraphNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
+    testSceneGraphRoot.append(nodeE);
+
+    // 5th step
+    var nodeF = new TransformationSceneGraphNode(matrixMultiply(makeTranslationMatrix(1,-4,0), makeScaleMatrix(2,2,8)));
+    nodeF.append(new ObjectSceneGraphNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
+    testSceneGraphRoot.append(nodeF);
+}

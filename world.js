@@ -113,4 +113,7 @@ function init(resources)
 
     // initialization of scenes
     initTestScene();
+    init1WorldScene();
+    init2WorldScene();
+    init3WorldScene();
 }
