@@ -39,7 +39,7 @@ var camera = {
      */
     init: function()
     {
-        this.projectionMatrix = makePerspectiveProjectionMatrix(this.fov, canvasWidth / canvasHeight, this.zNear, this.zFar);
+        this.projectionMatrix = makePerspectiveProjectionMatrix(this.fov, aspectRatio, this.zNear, this.zFar);
 
         // this is not visible inside nested functions => reference via additional variable
         let thisr = this;
@@ -97,14 +97,25 @@ var camera = {
      */
     update: function(dt)
     {
-        var tmp = this.viewMatrix;
-        tmp = matrixMultiply(makeXRotationMatrix(this.rotationX * this.rotationScale * dt), tmp);
-        tmp = matrixMultiply(makeYRotationMatrix(this.rotationY * this.rotationScale * dt), tmp);
+        // matrix
+        //
+        // [sx, r
+        // [
+        // [
+        // [
+
+        var tmpRot = makeIdentityMatrix();
+        tmpRot = matrixMultiply(makeXRotationMatrix(this.rotationX * this.rotationScale * dt), tmpRot);
+        tmpRot = matrixMultiply(makeYRotationMatrix(this.rotationY * this.rotationScale * dt), tmpRot);
+        // tmpRot = matrixMultiply(makeZRotationMatrix(-Math.asin(tmpRot[1])), tmpRot);      // correct rotation around z-axis
+
+        var tmp = matrixMultiply(tmpRot, this.viewMatrix);
         tmp = matrixMultiply(makeTranslationMatrix(this.moveX * this.movementScale * dt, 0, this.moveZ * this.movementScale * dt), tmp);
 
-        this.viewMatrix = tmp;
+        // position
+        console.log(tmp[12], tmp[13], tmp[14]);
 
-		// TODO extract position and orientation => generate lookat
+        this.viewMatrix = tmp;
 
         // reset rotation (cumulative)
         this.rotationX = 0;

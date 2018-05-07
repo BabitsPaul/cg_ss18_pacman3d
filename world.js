@@ -51,6 +51,7 @@ var world = {
     rootNode : new SceneGraphRootNode(),
     staticSceneNode : new SceneGraphNode(),
     sceneNode :  new SceneGraphNode(),
+    scene : null,
 
     init() {
         // build basis of scene-graph
@@ -64,8 +65,6 @@ var world = {
 
     render(timeInMillis)
     {
-        console.log("new frame");
-
         clock.update(timeInMillis);
 
         // setup for new frame
@@ -84,6 +83,20 @@ var world = {
 
         // set new static scene
         this.staticSceneNode.append(sgRoot);
+    },
+
+    switchScene(scene)
+    {
+        // dispose of old scene
+        if(this.scene)
+            this.scene.stop();
+
+        // update world-object and scenegraph
+        this.scene = scene;
+        this.sceneNode.children = [ scene.sg ];
+
+        // start new scene
+        scene.start();
     }
 };
 
