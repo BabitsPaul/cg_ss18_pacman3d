@@ -3,12 +3,9 @@ class SceneObject
     constructor(track, sg)
     {
         this.track = track;
-        this.sg = sg;
-    }
 
-    startTrack()
-    {
-        this.track.start();
+        this.sg = new TrackObjectGraphNode(track);
+        this.sg.append(sg);
     }
 }
 
@@ -38,7 +35,7 @@ class Scene
     start()
     {
         // start all tracks
-        this.objs.forEach(s => s.startTrack());
+        this.objs.forEach(s => s.track.start());
     }
 
     stop()

@@ -327,3 +327,85 @@ function lookAt (eyex, eyey, eyez, centerx, centery, centerz, upx, upy, upz) {
 function convertDegreeToRadians(degree) {
     return degree * Math.PI / 180
 }
+
+function makeCutoutSphere(radius, latitudeBands, longitudeBands, angle) {
+    radius = radius || 2;
+    latitudeBands = latitudeBands || 30;
+    longitudeBands = longitudeBands || 30;
+
+    //based on view-source:http://learningwebgl.com/lessons/lesson11/index.html
+    var vertexPositionData = [];
+    var normalData = [];
+    var textureCoordData = [];
+    for (var latNumber = 0; latNumber <= latitudeBands; latNumber++) {
+        var theta = latNumber * Math.PI / latitudeBands * (angle / (2 * Math.PI));
+        var sinTheta = Math.sin(theta);
+        var cosTheta = Math.cos(theta);
+        for (var longNumber = 0; longNumber <= longitudeBands; longNumber++) {
+            var phi = longNumber * 2 * Math.PI / longitudeBands;
+            var sinPhi = Math.sin(phi);
+            var cosPhi = Math.cos(phi);
+            var x = cosPhi * sinTheta;
+            var y = cosTheta;
+            var z = sinPhi * sinTheta;
+            var u = 1 - (longNumber / longitudeBands);
+            var v = 1 - (latNumber / latitudeBands);
+            normalData.push(x);
+            normalData.push(y);
+            normalData.push(z);
+            textureCoordData.push(u);
+            textureCoordData.push(v);
+            vertexPositionData.push(radius * x);
+            vertexPositionData.push(radius * y);
+            vertexPositionData.push(radius * z);
+        }
+    }
+
+    var indexData = [];
+
+    // prepend connections for mouth
+    for(var l = 1; l < longitudeBands - 1; l++)
+    {
+        indexData.push(0);
+        indexData.push(l);
+        indexData.push(l + 1);
+    }
+
+    // data for sphere
+    for (var latNumber = 0; latNumber < latitudeBands; latNumber++) {
+        for (var longNumber = 0; longNumber < longitudeBands; longNumber++) {
+            var first = (latNumber * (longitudeBands + 1)) + longNumber;
+            var second = first + longitudeBands + 1;
+            indexData.push(first);
+            indexData.push(second);
+            indexData.push(first + 1);
+            indexData.push(second);
+            indexData.push(second + 1);
+            indexData.push(first + 1);
+        }
+    }
+
+    // append connections for the mouth
+    var offset = (latitudeBands - 1) * longitudeBands;
+
+    for(var l = offset + 1; l < offset + longitudeBands - 1; l++)
+    {
+        indexData.push(offset);
+        indexData.push(l);
+        indexData.push(l + 1);
+    }
+
+    // color-buffer (TODO temporary)
+    var colorData = [];
+
+    for(var l = 0; l < latitudeBands * longitudeBands; l++)
+        colorData.push(0xFF, 0xFF, 0x00);
+
+    return {
+        position: vertexPositionData,
+        normal: normalData,
+        texture: textureCoordData,
+        index: indexData, //1
+        color: colorData
+    };
+}

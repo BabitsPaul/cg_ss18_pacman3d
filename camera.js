@@ -97,17 +97,38 @@ var camera = {
      */
     update: function(dt)
     {
-        // matrix
-        //
-        // [sx, r
-        // [
-        // [
-        // [
+        // FPS-camera
+        // source: https://www.3dgep.com/understanding-the-view-matrix/
+
+        /*
+        let cosPitch = Math.cos(pitch);
+        let sinPitch = Math.sin(pitch);
+        let cosYaw = Math.cos(yaw);
+        let sinYaw = Math.sin(yaw);
+
+        let xaxis = [ cosYaw, 0, -sinYaw ];
+        let yaxis = [ sinYaw * sinPitch, cosPitch, cosYaw * sinPitch ];
+        let zaxis = [ sinYaw * cosPitch, -sinPitch, cosPitch * cosYaw ];
+
+        // Create a 4x4 view matrix from the right, up, forward and eye position vectors
+        let viewMatrix = {
+            vec4(xaxis.x, yaxis
+    .
+        x, zaxis.x, 0
+    ),
+        vec4(xaxis.y, yaxis.y, zaxis.y, 0),
+            vec4(xaxis.z, yaxis.z, zaxis.z, 0),
+            vec4(-dot(xaxis, eye), -dot(yaxis, eye), -dot(zaxis, eye), 1)
+
+        // TODO correct rotation around z-axis
+        */
 
         var tmpRot = makeIdentityMatrix();
         tmpRot = matrixMultiply(makeXRotationMatrix(this.rotationX * this.rotationScale * dt), tmpRot);
         tmpRot = matrixMultiply(makeYRotationMatrix(this.rotationY * this.rotationScale * dt), tmpRot);
         // tmpRot = matrixMultiply(makeZRotationMatrix(-Math.asin(tmpRot[1])), tmpRot);      // correct rotation around z-axis
+        tmpRot[1] = 0;
+        tmpRot[9] = 0;
 
         var tmp = matrixMultiply(tmpRot, this.viewMatrix);
         tmp = matrixMultiply(makeTranslationMatrix(this.moveX * this.movementScale * dt, 0, this.moveZ * this.movementScale * dt), tmp);
@@ -123,5 +144,5 @@ var camera = {
 
         // keep the function in the update-loop of the clock
         return true;
-    },
-};
+    }
+}
