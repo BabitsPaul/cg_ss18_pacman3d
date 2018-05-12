@@ -97,46 +97,20 @@ var camera = {
      */
     update: function(dt)
     {
-        // FPS-camera
-        // source: https://www.3dgep.com/understanding-the-view-matrix/
-
-        /*
-        let cosPitch = Math.cos(pitch);
-        let sinPitch = Math.sin(pitch);
-        let cosYaw = Math.cos(yaw);
-        let sinYaw = Math.sin(yaw);
-
-        let xaxis = [ cosYaw, 0, -sinYaw ];
-        let yaxis = [ sinYaw * sinPitch, cosPitch, cosYaw * sinPitch ];
-        let zaxis = [ sinYaw * cosPitch, -sinPitch, cosPitch * cosYaw ];
-
-        // Create a 4x4 view matrix from the right, up, forward and eye position vectors
-        let viewMatrix = {
-            vec4(xaxis.x, yaxis
-    .
-        x, zaxis.x, 0
-    ),
-        vec4(xaxis.y, yaxis.y, zaxis.y, 0),
-            vec4(xaxis.z, yaxis.z, zaxis.z, 0),
-            vec4(-dot(xaxis, eye), -dot(yaxis, eye), -dot(zaxis, eye), 1)
-
-        // TODO correct rotation around z-axis
-        */
-
-        var tmpRot = makeIdentityMatrix();
-        tmpRot = matrixMultiply(makeXRotationMatrix(this.rotationX * this.rotationScale * dt), tmpRot);
-        tmpRot = matrixMultiply(makeYRotationMatrix(this.rotationY * this.rotationScale * dt), tmpRot);
-        // tmpRot = matrixMultiply(makeZRotationMatrix(-Math.asin(tmpRot[1])), tmpRot);      // correct rotation around z-axis
-        tmpRot[1] = 0;
-        tmpRot[9] = 0;
-
-        var tmp = matrixMultiply(tmpRot, this.viewMatrix);
+        // calculate movement
+        var tmp = matrixMultiply(makeXRotationMatrix(this.rotationX * this.rotationScale * dt), this.viewMatrix);
+        tmp = matrixMultiply(makeYRotationMatrix(this.rotationY * this.rotationScale * dt), tmp);
         tmp = matrixMultiply(makeTranslationMatrix(this.moveX * this.movementScale * dt, 0, this.moveZ * this.movementScale * dt), tmp);
 
-        // position
-        console.log(tmp[12], tmp[13], tmp[14]);
+        // correct z-axis rotation
+        tmp = mat4.invert(mat4.create(), tmp);
 
-        this.viewMatrix = tmp;
+        var angleZ = Math.asin(vec3.dot(    // angle between z-axis and right-vector of the viewmatrix
+            vec3.normalize(vec3.create(), vec3.fromValues(tmp[0], tmp[1], tmp[2])),
+            vec3.normalize(vec3.create(), vec3.fromValues(0, 1, 0))
+        ));
+
+        this.viewMatrix = matrixMultiply(makeZRotationMatrix(angleZ), mat4.invert(mat4.create(), tmp));  // correct rotation
 
         // reset rotation (cumulative)
         this.rotationX = 0;

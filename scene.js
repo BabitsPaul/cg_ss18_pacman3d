@@ -25,11 +25,12 @@ class Scene
 
         // build scenegraph
         this.sg = new SceneGraphNode();
-        this.objs.map(v => {
-            var t = new TrackObjectGraphNode(v.track);
-            t.append(v.sg);
-            return t;
-        }).forEach(t => this.sg.append(t));
+    }
+
+    addObject(obj)
+    {
+        this.objs.append(obj);
+        this.sg.append(obj.sg);
     }
 
     start()
