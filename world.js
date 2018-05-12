@@ -93,7 +93,7 @@ var world = {
 
         // update world-object and scenegraph
         this.scene = scene;
-        this.sceneNode.children = [ scene.sg ];
+        this.sceneNode = scene.sg;
 
         // start new scene
         scene.start();
@@ -126,7 +126,7 @@ function init(resources)
 
     // initialization of scenes
     initTestScene();
-    init1WorldScene();
-    init2WorldScene();
-    init3WorldScene();
+    // init1WorldScene();
+    // init2WorldScene();
+    // init3WorldScene();
 }

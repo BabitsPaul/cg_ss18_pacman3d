@@ -77,6 +77,25 @@ function initTestScene()
     nodeF.append(new ObjectSceneGraphNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
     testSceneGraphRoot.append(nodeF);
 
+    /*
+    // sphere
+    var sphere = makeCutoutSphere(2, 100, 100, Math.PI * 1.5);
+
+    var sphereVertexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, sphereVertexBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, sphere.position, gl.STATIC_DRAW);
+
+    var sphereColorBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, sphereColorBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, sphere.color, gl.STATIC_DRAW);
+
+    var sphereIndexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, sphereIndexBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, sphere.index, gl.STATIC_DRAW);
+
+    testSceneGraphRoot.append(new ObjectSceneGraphNode(100 * 100, sphereVertexBuffer, sphereColorBuffer, sphereIndexBuffer));
+    */
+
     // register test-scene in the world
     world.setStaticScene(testSceneGraphRoot);
 
@@ -91,12 +110,11 @@ function initTestScene()
 
     track.start();
 }
+
+/*
 function init1WorldScene()
 {
     // build sceneGraph
-    // testSceneGraphRoot = new SceneGraphNode();
-    WorldSceneGraphRoot = new SceneGraphNode();
-
     //1 floor
     var floor = new TransformationSceneGraphNode(matrixMultiply(makeTranslationMatrix(0, 0, 0), makeScaleMatrix(16,0.5,8)));
     floor.append(new ObjectSceneGraphNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
@@ -161,3 +179,4 @@ function init3WorldScene()
     nodeF.append(new ObjectSceneGraphNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
     testSceneGraphRoot.append(nodeF);
 }
+*/
