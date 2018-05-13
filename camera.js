@@ -97,20 +97,22 @@ var camera = {
      */
     update: function(dt)
     {
-        // calculate movement
-        var tmp = matrixMultiply(makeXRotationMatrix(this.rotationX * this.rotationScale * dt), this.viewMatrix);
-        tmp = matrixMultiply(makeYRotationMatrix(this.rotationY * this.rotationScale * dt), tmp);
-        tmp = matrixMultiply(makeTranslationMatrix(this.moveX * this.movementScale * dt, 0, this.moveZ * this.movementScale * dt), tmp);
+        mat4.invert(this.viewMatrix, this.viewMatrix);
+
+        // update position and orientation
+        mat4.rotate(this.viewMatrix, this.viewMatrix, this.rotationX * this.rotationScale * dt, vec3.fromValues(1, 0, 0));
+        mat4.rotate(this.viewMatrix, this.viewMatrix, this.rotationY * this.rotationScale * dt, vec3.fromValues(0, 1, 0));
+        mat4.translate(this.viewMatrix, this.viewMatrix, vec3.fromValues(- this.moveX * this.movementScale * dt, 0, - this.moveZ * this.movementScale * dt));
 
         // correct z-axis rotation
-        tmp = mat4.invert(mat4.create(), tmp);
-
         var angleZ = Math.asin(vec3.dot(    // angle between z-axis and right-vector of the viewmatrix
-            vec3.normalize(vec3.create(), vec3.fromValues(tmp[0], tmp[1], tmp[2])),
+            vec3.normalize(vec3.create(), vec3.fromValues(this.viewMatrix[0], this.viewMatrix[1], this.viewMatrix[2])),
             vec3.normalize(vec3.create(), vec3.fromValues(0, 1, 0))
         ));
 
-        this.viewMatrix = matrixMultiply(makeZRotationMatrix(angleZ), mat4.invert(mat4.create(), tmp));  // correct rotation
+        mat4.rotate(this.viewMatrix, this.viewMatrix, - angleZ, vec3.fromValues(0, 0, 1));    // correct rotation
+
+        mat4.invert(this.viewMatrix, this.viewMatrix);
 
         // reset rotation (cumulative)
         this.rotationX = 0;
