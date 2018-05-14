@@ -1,51 +1,10 @@
-/**
- * base node of the scenegraph
- */
-class SceneGraphNode {
-
-    constructor() {
-        this.children = [];
-    }
-
-    /**
-     * appends a new child to this node
-     * @param child the child to append
-     * @returns {SceneGraphNode} the child
-     */
-    append(child) {
-        this.children.push(child);
-        return child;
-    }
-
-    /**
-     * removes a child from this node
-     * @param child
-     * @returns {boolean} whether the operation was successful
-     */
-    remove(child) {
-        var i = this.children.indexOf(child);
-        if (i >= 0) {
-            this.children.splice(i, 1);
-        }
-        return i >= 0;
-    };
-
-    /**
-     * render method to render this scengraph
-     * @param context
-     */
-    render(context) {
-        //render all children
-        this.children.forEach(function (c) {
-            return c.render(context);
-        });
-    };
-}
+// TODO remove
+class SceneGraphNode extends SGNode{}
 
 /**
  * a transformation node, i.e applied a transformation matrix to its successors
  */
-class TransformationSceneGraphNode extends SceneGraphNode {
+class TransformationSceneGraphNode extends SGNode {
     /**
      * the matrix to apply
      * @param matrix
@@ -77,41 +36,9 @@ class TransformationSceneGraphNode extends SceneGraphNode {
     }
 }
 
-/**
- * a shader node sets a specific shader for the successors
- */
-class ShaderSceneGraphNode extends SceneGraphNode {
-    /**
-     * constructs a new shader node with the given shader program
-     * @param shader the shader program to use
-     */
-    constructor(shader) {
-        super();
-        this.shader = shader;
-    }
-
-    render(context) {
-        //backup prevoius one
-        var backup = context.shader;
-        //set current shader
-        context.shader = this.shader;
-        //activate the shader
-        context.gl.useProgram(this.shader);
-        //set projection matrix
-        gl.uniformMatrix4fv(gl.getUniformLocation(context.shader, 'u_projection'),
-            false, context.projectionMatrix);
-        //render children
-        super.render(context);
-        //restore backup
-        context.shader = backup;
-        //activate the shader
-        context.gl.useProgram(backup);
-    }
-};
-
 // custom nodes
 
-class ObjectSceneGraphNode extends SceneGraphNode
+class ObjectSGNode extends SGNode
 {
     /**
      * Constructs an new Object-node used to render objects. An object is in this
@@ -168,7 +95,7 @@ class ObjectSceneGraphNode extends SceneGraphNode
  * and writes the projectionMatrix
  */
 class SceneGraphRootNode
-    extends SceneGraphNode
+    extends SGNode
 {
     constructor()
     {
@@ -203,8 +130,8 @@ class SceneGraphRootNode
     }
 }
 
-class TrackObjectGraphNode
-    extends TransformationSceneGraphNode
+class TrackSGNode
+    extends TransformationSGNode
 {
     constructor(track)
     {
@@ -220,3 +147,12 @@ class TrackObjectGraphNode
         super.render(context);
     }
 }
+
+/* Update sg to add helper-functions for newly defined nodes */
+sg.object = function(bufferSize, vertexBuffer, colorBuffer, indexBuffer){
+    return new ObjectSGNode(bufferSize, vertexBuffer, colorBuffer, indexBuffer);
+};
+
+sg.track = function(track){
+    return new TrackSGNode(track);
+};

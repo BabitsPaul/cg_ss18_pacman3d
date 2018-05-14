@@ -4,7 +4,7 @@ class SceneObject
     {
         this.track = track;
 
-        this.sg = new TrackObjectGraphNode(track);
+        this.sg = new TrackSGNode(track);
         // this.sg.name = "track node obj";
         this.sg.append(sg);
     }

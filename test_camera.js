@@ -51,30 +51,30 @@ function initStaticScene()
 
     // build sceneGraph
     // testSceneGraphRoot = new SceneGraphNode();
-    testSceneGraphRoot = new SceneGraphNode();
+    testSceneGraphRoot = sg.root();
 
-    let nodeA = new TransformationSceneGraphNode(makeTranslationMatrix(distance, 0, 0));
-    nodeA.append(new ObjectSceneGraphNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
+    let nodeA = sg.translate(distance, 0, 0);
+    nodeA.append(new ObjectSGNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
     testSceneGraphRoot.append(nodeA);
 
-    let nodeB = new TransformationSceneGraphNode(makeTranslationMatrix(-distance, 0, 0));
-    nodeB.append(new ObjectSceneGraphNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
+    let nodeB = sg.translate(-distance, 0, 0);
+    nodeB.append(new ObjectSGNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
     testSceneGraphRoot.append(nodeB);
 
-    let nodeC = new TransformationSceneGraphNode(makeTranslationMatrix(0, distance, 0));
-    nodeC.append(new ObjectSceneGraphNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
+    let nodeC = sg.translate(0, distance, 0);
+    nodeC.append(new ObjectSGNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
     testSceneGraphRoot.append(nodeC);
 
-    let nodeD = new TransformationSceneGraphNode(makeTranslationMatrix(0, -distance, 0));
-    nodeD.append(new ObjectSceneGraphNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
+    let nodeD = sg.translate(0, -distance, 0);
+    nodeD.append(new ObjectSGNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
     testSceneGraphRoot.append(nodeD);
 
-    let nodeE = new TransformationSceneGraphNode(makeTranslationMatrix(0, 0, distance));
-    nodeE.append(new ObjectSceneGraphNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
+    let nodeE = sg.translate(0, 0, distance);
+    nodeE.append(new ObjectSGNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
     testSceneGraphRoot.append(nodeE);
 
-    let nodeF = new TransformationSceneGraphNode(makeTranslationMatrix(0, 0, -distance));
-    nodeF.append(new ObjectSceneGraphNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
+    let nodeF = sg.translate(0, 0, -distance);
+    nodeF.append(new ObjectSGNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
     testSceneGraphRoot.append(nodeF);
 
     /*
@@ -93,7 +93,7 @@ function initStaticScene()
     gl.bindBuffer(gl.ARRAY_BUFFER, sphereIndexBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, sphere.index, gl.STATIC_DRAW);
 
-    testSceneGraphRoot.append(new ObjectSceneGraphNode(100 * 100, sphereVertexBuffer, sphereColorBuffer, sphereIndexBuffer));
+    testSceneGraphRoot.append(new ObjectSGNode(100 * 100, sphereVertexBuffer, sphereColorBuffer, sphereIndexBuffer));
     */
 
     // init1WorldScene();
@@ -109,17 +109,17 @@ function init1WorldScene()
     // build sceneGraph
     //1 floor
     var floor = new TransformationSceneGraphNode(matrixMultiply(makeTranslationMatrix(0, 0, 0), makeScaleMatrix(16,0.5,8)));
-    floor.append(new ObjectSceneGraphNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
+    floor.append(new ObjectSGNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
     testSceneGraphRoot.append(floor);
 
     //2 left wall
     var nodeC = new TransformationSceneGraphNode(matrixMultiply(makeTranslationMatrix(0,0.5,-2.25), makeScaleMatrix(16,2,0.5)));
-    nodeC.append(new ObjectSceneGraphNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
+    nodeC.append(new ObjectSGNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
     testSceneGraphRoot.append(nodeC);
 
     //3 right wall
     var nodeD = new TransformationSceneGraphNode(matrixMultiply(makeTranslationMatrix(0,0.5,2.25), makeScaleMatrix(16,2,0.5)));
-    nodeD.append(new ObjectSceneGraphNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
+    nodeD.append(new ObjectSGNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
     testSceneGraphRoot.append(nodeD);
 }
 
@@ -127,12 +127,12 @@ function init2WorldScene()
 {
     // 1 floor
     var floor = new TransformationSceneGraphNode(matrixMultiply(makeTranslationMatrix(0+10, 0, 0), makeScaleMatrix(20,0.5,8)));
-    floor.append(new ObjectSceneGraphNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
+    floor.append(new ObjectSGNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
     testSceneGraphRoot.append(floor);
 
     // 2 window
     var nodeC = new TransformationSceneGraphNode(matrixMultiply(makeTranslationMatrix(2.5+11,0.0,0), makeScaleMatrix(4,0.88,4)));
-    nodeC.append(new ObjectSceneGraphNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
+    nodeC.append(new ObjectSGNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
     testSceneGraphRoot.append(nodeC);
 }
 
@@ -140,27 +140,27 @@ function init3WorldScene()
 {
     // 1st step
     var floor = new TransformationSceneGraphNode(matrixMultiply(makeTranslationMatrix(-3+14,-1,0), makeScaleMatrix(2,2,8)));
-    floor.append(new ObjectSceneGraphNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
+    floor.append(new ObjectSGNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
     testSceneGraphRoot.append(floor);
 
     // 2nd step
     var nodeC = new TransformationSceneGraphNode(matrixMultiply(makeTranslationMatrix(-2+14,-2,0), makeScaleMatrix(2,2,8)));
-    nodeC.append(new ObjectSceneGraphNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
+    nodeC.append(new ObjectSGNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
     testSceneGraphRoot.append(nodeC);
 
     // 3rd step
     var nodeD = new TransformationSceneGraphNode(matrixMultiply(makeTranslationMatrix(-1+14,-3,0), makeScaleMatrix(2,2,8)));
-    nodeD.append(new ObjectSceneGraphNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
+    nodeD.append(new ObjectSGNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
     testSceneGraphRoot.append(nodeD);
 
     // 4th step
     var nodeE = new TransformationSceneGraphNode(matrixMultiply(makeTranslationMatrix(0+14,-4,0), makeScaleMatrix(2,2,8)));
-    nodeE.append(new ObjectSceneGraphNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
+    nodeE.append(new ObjectSGNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
     testSceneGraphRoot.append(nodeE);
 
     // 5th step
     var nodeF = new TransformationSceneGraphNode(matrixMultiply(makeTranslationMatrix(1+14,-5,0), makeScaleMatrix(2,2,8)));
-    nodeF.append(new ObjectSceneGraphNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
+    nodeF.append(new ObjectSGNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
     testSceneGraphRoot.append(nodeF);
 }
 
@@ -172,7 +172,7 @@ function initScene1()
     track.addInterpolationPoint([-10, 0, -10], 0);
     track.addInterpolationPoint([10, 0, -10], 1e4);
 
-    let obj = new SceneObject(track, new ObjectSceneGraphNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
+    let obj = new SceneObject(track, new ObjectSGNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
     scene.addObject(obj);
 
     scene.cameraOrientationTrack = new Track();
