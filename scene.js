@@ -5,6 +5,7 @@ class SceneObject
         this.track = track;
 
         this.sg = new TrackObjectGraphNode(track);
+        // this.sg.name = "track node obj";
         this.sg.append(sg);
     }
 }
@@ -22,6 +23,8 @@ class Scene
     {
         this.objs = [];
         this.hitbox = hitbox;
+        this.cameraLocationTrack = null;
+        this.cameraOrientationTrack = null;
 
         // build scenegraph
         this.sg = new SceneGraphNode();
@@ -29,7 +32,7 @@ class Scene
 
     addObject(obj)
     {
-        this.objs.append(obj);
+        this.objs.push(obj);
         this.sg.append(obj.sg);
     }
 
@@ -37,11 +40,17 @@ class Scene
     {
         // start all tracks
         this.objs.forEach(s => s.track.start());
+
+        camera.orientationTrack = this.cameraOrientationTrack;
+        camera.locationTrack = this.cameraLocationTrack;
+
+        this.cameraOrientationTrack.start();
+        this.cameraLocationTrack.start();
     }
 
     stop()
     {
-        this.objs.forEach(s => s.track.stop());
+        this.objs.forEach(s => s.track.abort());
     }
 
     resume()
@@ -49,11 +58,11 @@ class Scene
         this.objs.forEach(s => s.track.resume());
     }
 
-    should_start(camera_pos)
+    shouldStart(camera_pos)
     {
-        var delta = camera_pos.map((v, i, _) => Math.abs(v - this.hitbox[i]));
-        var in_range = delta.map((v, i, _) => v - this.hitbox[3 + i]);
+        let delta = camera_pos.map((v, i) => Math.abs(v - this.hitbox[i]));
+        let in_range = delta.map((v, i) => v - this.hitbox[3 + i]);
 
-        return in_range.reduce((t, v, _) => t && v);
+        return in_range.reduce((t, v) => t && v);
     }
 }

@@ -36,7 +36,7 @@ class ClockReact
     }
 }
 
-class CummulativeClockReact extends ClockReact
+class CumulativeClockReact extends ClockReact
 {
     /**
      * Builds a new clockreact-object.
@@ -96,13 +96,15 @@ let clock = {
     /* Holds a list of currently active clock-reacts. */
     clockReactList: [],
 
+    /* list of actions that will be registered on the next frame */
+    newReacts : [],
+
     /** should be called before animating a frame.
      * Updates the time-difference between two frames,
      * if the clock is enabled. Otherwise it remains 0
      *
      * @param time time at which this current call is done
      */
-
     update: function(time) {
         // get current time from a date-object, if not provided as parameter
         // beware of potential interference (?)
@@ -115,7 +117,13 @@ let clock = {
         this.deltaTime = time - this.oldTime;
         this.oldTime = time;
 
+        let before = this.clockReactList.length;
         this.clockReactList = this.clockReactList.filter(react => react.update(this.deltaTime));
+
+        // add new clockreacts and clear list of pending candidates
+        // newly registered actions will have a delay of one frame
+        this.clockReactList = this.clockReactList.concat(this.newReacts);
+        this.newReacts = [];
     },
 
     /** Starts the clock, if it previously was stopped.
@@ -146,12 +154,13 @@ let clock = {
      * @param time time after which the action should be trigger (in ms)
      * @param react action to trigger
      * @param repeat true if the action should be repeated.
-     * @return CummulativeClockReact CummulativeClockReact associated with this action.
+     * @return CumulativeClockReact CummulativeClockReact associated with this action.
      */
-    registerCummulativeClockReaction: function(time, react, repeat)
+    registerCumulativeClockReaction: function(time, react, repeat)
     {
-        let r = new CummulativeClockReact(time, react, repeat);
-        this.clockReactList.push(r);
+        let r = new CumulativeClockReact(time, react, repeat);
+        // this.clockReactList.push(r);
+        this.newReacts.push(r);
         return r;
     },
 
@@ -164,7 +173,8 @@ let clock = {
     registerClockReaction: function(react)
     {
         let r = new ClockReact(react);
-        this.clockReactList.push(r);
+        // this.clockReactList.push(r);
+        this.newReacts.push(r);
         return r;
     },
 
@@ -177,8 +187,10 @@ let clock = {
      */
     registerUpdateable: function(updateable)
     {
-        this.clockReactList.push(updateable);
-    },
+        // this.clockReactList.push(updateable);
+        this.newReacts.push(updateable);
+
+            },
 
     /**
      * Initializes the clock

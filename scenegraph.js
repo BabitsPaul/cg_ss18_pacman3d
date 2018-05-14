@@ -215,9 +215,7 @@ class TrackObjectGraphNode
 
     render(context)
     {
-        var pos = this.track.position;
-
-        this.matrix = makeTranslationMatrix(pos[0], pos[1], pos[2]);
+        this.matrix = mat4.translate(this.matrix, mat4.create(), this.track.vec3Position);
 
         super.render(context);
     }

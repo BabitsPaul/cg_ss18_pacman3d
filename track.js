@@ -2,11 +2,11 @@ class InterPolationPoint
 {
     constructor(xyz, t)
     {
-        this.xyz = xyz;
+        this.xyz = vec3.fromValues(xyz[0], xyz[1], xyz[2]);
         this.t = t;
     }
 
-    compare(a, b)
+    static compare(a, b)
     {
         return a.t - b.t;
     }
@@ -26,6 +26,7 @@ class Track
         this.index = 0;
         this.position = (this.ips.size > 0 ? this.ips[0].xyz : null);
         this.sorted = false;
+        this.vec3Position = (this.position ? vec3.fromValues(this.position[0], this.position[1], this.position[2]) : vec3.create());
     }
 
     addInterpolationPoint(xyz, pt)
@@ -41,40 +42,35 @@ class Track
     update(dt)
     {
         // terminate if the track is inactive
-        if(!this.active)
+        if(!this.active || this.ips.length === 0)
             return false;
 
         // update accumulated time
         this.accumulatedTime += dt;
 
-        // end of track
-        if(this.index >= this.ips.size)
-            return false;
-
         // update index if the time-frame was exceeded
-        if(this.ips[this.index + 1].t <= this.accumulatedTime)
+        if(this.index < this.ips.length - 1 && this.ips[this.index + 1].t <= this.accumulatedTime)
             this.index++;
 
-        // terminate if the last point of the track was reached
-        if(this.index == this.ips.length - 1)
+        // end of track
+        if(this.index >= this.ips.length - 1)
         {
             // last point in the track => update position and terminate
-            this.position = this.ips[this.index].xyz;
+            this.vec3Position = this.ips[this.index].xyz;
+            this.position = [this.vec3Position[0], this.vec3Position[1], this.vec3Position[1]];
+
             return false;
         }
 
         // interpolate point
-        var frameOffset = this.ips[this.index].t;
-        var frameLength = this.ips[this.index + 1].t - frameOffset;
-        var prop = (this.accumulatedTime - frameOffset) / frameLength;
-        var posA = this.ips[this.index];
-        var posB = this.ips[this.index + 1];
+        let frameOffset = this.ips[this.index].t;
+        let frameLength = this.ips[this.index + 1].t - frameOffset;
+        let prop = (this.accumulatedTime - frameOffset) / frameLength;
+        let posA = this.ips[this.index];
+        let posB = this.ips[this.index + 1];
 
-        this.position = [
-            posA.xyz[0] * (1 - prop) + posB.xyz[0] * prop,
-            posA.xyz[0] * (1 - prop) + posB.xyz[1] * prop,
-            posA.xyz[2] * (1 - prop) + posB.xyz[2] * prop
-        ];
+        vec3.lerp(this.vec3Position, posA.xyz, posB.xyz, prop);
+        this.position = [this.vec3Position[0], this.vec3Position[1], this.vec3Position[2]];
 
         return true;
     }
