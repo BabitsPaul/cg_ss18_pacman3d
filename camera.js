@@ -20,7 +20,7 @@ var camera = {
     /* screen and view-matrix */
     sceneMatrix : mat4.create(),
     viewMatrix : mat4.lookAt(mat4.create(),
-            vec3.fromValues(0, 0, 5),       // eye
+            vec3.fromValues(0, 0, -5),       // eye
             vec3.fromValues(0, 0, 0),       // look at
             vec3.fromValues(0, 1, 0)),      // up-vector
 

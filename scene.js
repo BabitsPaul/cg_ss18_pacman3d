@@ -27,7 +27,7 @@ class Scene
         this.cameraOrientationTrack = null;
 
         // build scenegraph
-        this.sg = new SceneGraphNode();
+        this.sg = sg.root();
     }
 
     addObject(obj)

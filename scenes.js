@@ -1,58 +1,16 @@
-let cubeVertexBuffer;
-let cubeColorBuffer;
-let cubeIndexBuffer;
-
 let s = 0.3; //size of cube
-const cubeVertices = new Float32Array([
-    -s, -s, -s, s, -s, -s, s, s, -s, -s, s, -s,
-    -s, -s, s, s, -s, s, s, s, s, -s, s, s,
-    -s, -s, -s, -s, s, -s, -s, s, s, -s, -s, s,
-    s, -s, -s, s, s, -s, s, s, s, s, -s, s,
-    -s, -s, -s, -s, -s, s, s, -s, s, s, -s, -s,
-    -s, s, -s, -s, s, s, s, s, s, s, s, -s,
-]);
-
-const cubeColors = new Float32Array([
-    0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1,
-    1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1,
-    1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0,
-    0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1,
-    1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0,
-    0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0
-]);
-
-const cubeIndices = new Float32Array([
-    0, 1, 2, 0, 2, 3,
-    4, 5, 6, 4, 6, 7,
-    8, 9, 10, 8, 10, 11,
-    12, 13, 14, 12, 14, 15,
-    16, 17, 18, 16, 18, 19,
-    20, 21, 22, 20, 22, 23
-]);
 
 let testSceneGraphRoot;
 
-function initStaticScene()
+function initStaticScene(resources)
 {
     let distance = 2;
-
-    // init buffers
-    cubeVertexBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, cubeVertexBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, cubeVertices, gl.STATIC_DRAW);
-
-    cubeColorBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, cubeColorBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, cubeColors, gl.STATIC_DRAW);
-
-    cubeIndexBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, cubeIndexBuffer);
-    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(cubeIndices), gl.STATIC_DRAW);
 
     // build sceneGraph
     // testSceneGraphRoot = new SceneGraphNode();
     testSceneGraphRoot = sg.root();
 
+    /*
     let nodeA = sg.translate(distance, 0, 0);
     nodeA.append(new ObjectSGNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
     testSceneGraphRoot.append(nodeA);
@@ -76,6 +34,15 @@ function initStaticScene()
     let nodeF = sg.translate(0, 0, -distance);
     nodeF.append(new ObjectSGNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
     testSceneGraphRoot.append(nodeF);
+    */
+
+    testSceneGraphRoot.append(
+        new SetUniformSGNode("u_enableObjectTexture", true,
+            new AdvancedTextureSGNode(resources.lava,
+                sg.drawSphere(2, 100, 100)
+            )
+        )
+    );
 
     /*
     // sphere
@@ -166,6 +133,7 @@ function init3WorldScene()
 
 function initScene1()
 {
+    /*
     let scene = new Scene(0, 0, 0, 5, 5, 5);
 
     let track = new Track();
@@ -184,4 +152,5 @@ function initScene1()
     scene.cameraLocationTrack.addInterpolationPoint([0, 0, 10], 1e4);
 
     world.addScene(scene);
+    */
 }

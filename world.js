@@ -1,24 +1,20 @@
 //the OpenGL context
-var gl = null;
+let gl = null;
 //our shader program
-var shaderProgram = null;
+let shaderProgram = null;
+let phongShader = null;
 
-var canvasWidth = 800;
-var canvasHeight = 800;
-var aspectRatio = canvasWidth / canvasHeight;
-
-var modelViewLocation;
-var positionLocation;
-var colorLocation;
-var projectionLocation;
-
-// scene graph-context
-
+let canvasWidth = 800;
+let canvasHeight = 800;
+let aspectRatio = canvasWidth / canvasHeight;
 
 //load the shader resources using a utility function
 loadResources({
-    vs: 'shader/simple.vs.glsl',
-    fs: 'shader/simple.fs.glsl'
+    vs :    'shader/simple.vs.glsl',
+    fs :    'shader/simple.fs.glsl',
+    pvs :   'shader/phong.vs.glsl',
+    pfs :   'shader/phong.fs.glsl',
+    lava :  'texture/lava.jpg'
 }).then(function (resources /*an object containing our keys with the loaded resources*/) {
     init(resources);
 
@@ -52,12 +48,7 @@ function init(resources)
     //in WebGL / OpenGL3 we have to create and use our own shaders for the programmable pipeline
     //create the shader program
     shaderProgram = createProgram(gl, resources.vs, resources.fs);
-
-    // shader-locations
-    modelViewLocation = gl.getUniformLocation(shaderProgram, 'u_modelView');
-    projectionLocation = gl.getUniformLocation(shaderProgram, 'u_projection');
-    positionLocation = gl.getAttribLocation(shaderProgram, "a_position");
-    colorLocation = gl.getAttribLocation(shaderProgram, "a_color");
+    phongShader = createProgram(gl, resources.pvs, resources.pfs);
 
     // initialization of components
     camera.init();
@@ -65,7 +56,7 @@ function init(resources)
     world.init();
 
     // initialization of scenes
-    initStaticScene();
+    initStaticScene(resources);
     initScene1();
 
     // run world
@@ -73,6 +64,7 @@ function init(resources)
 }
 
 const world = {
+    /* sg-context for rendering */
     sg_context : {
         gl: gl,
         sceneMatrix: mat4.create(),
@@ -81,7 +73,13 @@ const world = {
         shader: null
     },
 
-    rootNode : new SceneGraphRootNode(),
+    /* represents the global light in the scene */
+    light : {
+        position : [5, 5, 5]
+    },
+
+    sceneRootNode : null,
+    renderRootNode : null,
     scene : null,
 
     /* List of scenes and triggers */
@@ -91,7 +89,19 @@ const world = {
     init() {
         // init scenegraph-context
         this.sg_context.gl = gl;
-        this.sg_context.shader = shaderProgram;
+        this.sg_context.shader = phongShader; // shaderProgram;
+
+        // init scenegraph
+        this.sceneRootNode = sg.root();
+        this.renderRootNode =
+            sg.root(
+                sg.shader(phongShader,
+                    sg.camera(camera,
+                        sg.light(this.light),    // TODO set invView uniform
+                        this.sceneRootNode
+                    )
+                )
+            );
 
         let self = this;
 
@@ -131,13 +141,13 @@ const world = {
         gl.enable(gl.DEPTH_TEST);                               // enable depth-test
 
         // render scene
-        this.rootNode.render(this.sg_context);                  // render scene
+        this.renderRootNode.render(this.sg_context);                  // render scene
     },
 
     setStaticScene(sgRoot)
     {
         // remove old staticScene
-        this.rootNode.append(sgRoot);
+        this.sceneRootNode.append(sgRoot);
     },
 
     addScene(scene)
@@ -151,9 +161,10 @@ const world = {
         let self = this;
 
         this.scenes.forEach((v, i) => {
-            let ccr = clock.registerCumulativeClockReaction(10e3 * i,  // 10 seconds per scene
-                () => self.switchScene(v),                              // switch scene,
-                false                                                   // don't repeat
+            let ccr = clock.registerCumulativeClockReaction(
+                1e4 * i,                    // 10 seconds per scene
+                () => self.switchScene(v),  // switch scene,
+                false                       // don't repeat
             );
 
             self.ccrs.push(ccr);
@@ -162,7 +173,6 @@ const world = {
 
     switchScene(scene)
     {
-
         // dispose of old scene
         if(this.scene)
             this.scene.stop();
@@ -170,8 +180,8 @@ const world = {
         // update world-object and scenegraph
         this.scene = scene;
 
-        this.rootNode.remove(this.scene.sg);
-        this.rootNode.append(scene.sg);
+        this.sceneRootNode.remove(this.scene.sg);
+        this.sceneRootNode.append(scene.sg);
 
         // start new scene
         scene.start();

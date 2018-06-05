@@ -1,6 +1,3 @@
-// TODO remove
-class SceneGraphNode extends SGNode{}
-
 /**
  * a transformation node, i.e applied a transformation matrix to its successors
  */
@@ -37,90 +34,28 @@ class TransformationSceneGraphNode extends SGNode {
 }
 
 // custom nodes
-
-class ObjectSGNode extends SGNode
-{
-    /**
-     * Constructs an new Object-node used to render objects. An object is in this
-     * context specified by the number of vertices (param bufferSize), it's vertexbuffer,
-     * colorBuffer and optionally an indexbuffer.
-     *
-     * Objects are rendered with gl.Triangles
-     *
-     * @param bufferSize number of vertices of the object
-     * @param vertexBuffer vertexbuffer of the object
-     * @param colorBuffer colorbuffer of the object
-     * @param indexBuffer optional indexBuffer
-     */
-    constructor(bufferSize, vertexBuffer, colorBuffer, indexBuffer)
-    {
-        super();
-
-        this.bufferSize = bufferSize;
-        this.vertexBuffer = vertexBuffer;
-        this.colorBuffer = colorBuffer;
-        this.indexBuffer = indexBuffer;
-    }
-
-    render(context)
-    {
-        // write modelview matrix
-        var modelViewMatrix = mat4.multiply(mat4.create(), context.viewMatrix, context.sceneMatrix);
-        gl.uniformMatrix4fv(gl.getUniformLocation(context.shader, 'u_modelView'), false, modelViewMatrix);
-
-        gl = context.gl;
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
-        gl.vertexAttribPointer(positionLocation, 3, gl.FLOAT, false,0,0) ;
-        gl.enableVertexAttribArray(positionLocation);
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.colorBuffer);
-        gl.vertexAttribPointer(colorLocation, 3, gl.FLOAT, false,0,0) ;
-        gl.enableVertexAttribArray(colorLocation);
-
-        if(this.indexBuffer !== null)
-            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
-
-        gl.drawElements(gl.TRIANGLES, this.bufferSize, gl.UNSIGNED_SHORT, 0);
-
-        super.render(context);
-    }
-}
-
-/**
- * Root node initializes rendering
- *
- * Sets up the context with data
- * from the camera, sets the shader
- * and writes the projectionMatrix
- */
-class SceneGraphRootNode
+class CameraSGNode
     extends SGNode
 {
-    constructor()
+    constructor(camera, children)
     {
-        super();
+        super(children);
+
+        this.camera = camera;
     }
 
     render(context)
     {
-        // setup shader
-        context.gl.useProgram(context.shader);
-
         // backup old context
         var tmpScene = context.sceneMatrix;
         var tmpView = context.viewMatrix;
         var tmpProjection = context.projectionMatrix;
 
         // update context
-        context.sceneMatrix = camera.sceneMatrix;
-        context.viewMatrix = camera.viewMatrix;
-        context.projectionMatrix = camera.projectionMatrix;
+        context.sceneMatrix = this.camera.sceneMatrix;
+        context.viewMatrix = this.camera.viewMatrix;
+        context.projectionMatrix = this.camera.projectionMatrix;
 
-        // write projection-matrix
-        context.gl.uniformMatrix4fv(projectionLocation, false, new Float32Array(context.projectionMatrix));
-
-        // render child-nodes
         super.render(context);
 
         // reset context
@@ -133,9 +68,9 @@ class SceneGraphRootNode
 class TrackSGNode
     extends TransformationSGNode
 {
-    constructor(track)
+    constructor(track, children)
     {
-        super();
+        super(children);
 
         this.track = track;
     }
@@ -148,11 +83,35 @@ class TrackSGNode
     }
 }
 
+class WorldLightSGNode
+    extends LightSGNode
+{
+    constructor(light, children)
+    {
+        super(light.position, children);
+
+        this.light = light;
+    }
+
+    render(context)
+    {
+        this.position = this.light.position;
+
+        console.log(gl.getUniformLocation(context.shader, "u_light.ambient"));
+
+        super.render(context);
+    }
+}
+
 /* Update sg to add helper-functions for newly defined nodes */
-sg.object = function(bufferSize, vertexBuffer, colorBuffer, indexBuffer){
-    return new ObjectSGNode(bufferSize, vertexBuffer, colorBuffer, indexBuffer);
+sg.track = function(track){
+    return new TrackSGNode(track, [].slice.call(arguments).slice(1));
 };
 
-sg.track = function(track){
-    return new TrackSGNode(track);
+sg.camera = function(camera){
+    return new CameraSGNode(camera, [].slice.call(arguments).slice(1));
+};
+
+sg.light = function(light){
+    return new WorldLightSGNode(light, [].slice.call(arguments).slice(1));
 };
