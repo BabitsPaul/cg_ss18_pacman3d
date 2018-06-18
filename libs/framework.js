@@ -373,7 +373,7 @@ function parseObjFile(objectData) {
    Now, you could just go through the OBJ file and create a new vertex for
    each face line and WebGL will draw what appears to be the same model.
    However, vertices will be overlapped and duplicated all over the place.
-   Consider a cube in 3D space centered about the origin and each side is
+   Consider a drawCube in 3D space centered about the origin and each side is
    2 units long. The front face (with the positive Z-axis pointing towards
    you) would have a Top Right vertex (looking orthogonal to its normal)
    mapped at (1,1,1) The right face would have a Top Left vertex (looking

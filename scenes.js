@@ -1,4 +1,4 @@
-let s = 0.3; //size of cube
+let s = 0.3; //size of drawCube
 
 let testSceneGraphRoot;
 
@@ -39,7 +39,7 @@ function initStaticScene(resources)
     testSceneGraphRoot.append(
         new SetUniformSGNode("u_enableObjectTexture", true,
             new AdvancedTextureSGNode(resources.lava,
-                sg.drawSphere(2, 100, 100)
+                sg.drawCube()
             )
         )
     );

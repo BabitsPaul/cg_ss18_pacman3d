@@ -23,7 +23,11 @@ class Scene
     {
         this.objs = [];
         this.hitbox = hitbox;
+
+        // cameraLocationTrack: used to interpolate the position of the camera
         this.cameraLocationTrack = null;
+
+        // cameraOrientationTrack: used to specify the orientation of the camera
         this.cameraOrientationTrack = null;
 
         // build scenegraph
