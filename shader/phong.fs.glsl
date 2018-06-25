@@ -64,7 +64,7 @@ vec4 calculateSimplePointLight(Light light, Material material, vec3 lightVec, ve
 }
 
 void main (void) {
-    vec4 textureColor = vec4(0,0,0,1); //requred in TASK 2
+    vec4 textureColor = vec4(0,0,0,1);
 
     if(u_enableObjectTexture)
     {

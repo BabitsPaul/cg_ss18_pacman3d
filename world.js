@@ -3,6 +3,7 @@ let gl = null;
 //our shader program
 let shaderProgram = null;
 let phongShader = null;
+let particleShader = null;
 
 let canvasWidth = 800;
 let canvasHeight = 800;
@@ -14,6 +15,8 @@ loadResources({
     fs :    'shader/simple.fs.glsl',
     pvs :   'shader/phong.vs.glsl',
     pfs :   'shader/phong.fs.glsl',
+    rvs :   'shader/rain.vs.glsl',
+    rfs :   'shader/rain.fs.glsl',
     lava :  'texture/lava.jpg'
 }).then(function (resources /*an object containing our keys with the loaded resources*/) {
     init(resources);
@@ -49,6 +52,8 @@ function init(resources)
     //create the shader program
     shaderProgram = createProgram(gl, resources.vs, resources.fs);
     phongShader = createProgram(gl, resources.pvs, resources.pfs);
+    particleShader = createProgram(gl, resources.rvs, resources.rfs);
+    particleShader.name = 'particle shader';
 
     // initialization of components
     camera.init();
@@ -82,6 +87,8 @@ const world = {
     renderRootNode : null,
     scene : null,
 
+    rain : null,
+
     /* List of scenes and triggers */
     scenes : [],
     ccrs : [],
@@ -90,6 +97,8 @@ const world = {
         // init scenegraph-context
         this.sg_context.gl = gl;
         this.sg_context.shader = phongShader; // shaderProgram;
+
+        this.rain = new ParticleSGNode(2, [0, 0, 0], [0, 0, .5, 1.]);
 
         // init scenegraph
         this.sceneRootNode = sg.root();
@@ -142,6 +151,16 @@ const world = {
 
         // render scene
         this.renderRootNode.render(this.sg_context);                  // render scene
+
+        /*
+        gl.useProgram(particleShader);
+
+        this.sg_context.shader = particleShader;
+        this.sg_context.projectionMatrix = camera.projectionMatrix;
+        this.sg_context.sceneMatrix = camera.sceneMatrix;
+        this.sg_context.viewMatrix = mat4.multiply(mat4.create(), camera.viewMatrix, mat4.scale(mat4.create(), mat4.create(), [10., 10., 10.]));
+        this.rain.render(this.sg_context);
+        */
     },
 
     setStaticScene(sgRoot)

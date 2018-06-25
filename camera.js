@@ -5,7 +5,7 @@
 var camera = {
     /* Configuration */
     rotationScale : .0001,      // regulates the speed of the camera rotation
-    movementScale : .0025,      // regulates the speed of the camera movement
+    movementScale : .01,      // regulates the speed of the camera movement
     viewDepth : 100,            // maximum-depth at which objects are still visible
     movementOnMousePress : true,// only rotate the camera if the left-button is pressed
     mouseInverted: false,       // invert the mouse
