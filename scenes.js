@@ -76,8 +76,6 @@ function initStaticScene(resources)
     var gridDistanceY = worldConfig.gridLength / worldConfig.gridBarWidth;
     var gridOffsetX = worldConfig.scene1Length + worldConfig.stairLength + worldConfig.gridStairOffset;
 
-
-
     world.setStaticScene(scene);
 }
 
@@ -89,7 +87,7 @@ function initScene1()
     track.addInterpolationPoint([-10, 0, -10], 0);
     track.addInterpolationPoint([10, 0, -10], 1e4);
 
-    let obj = new SceneObject(track, new ObjectSGNode(cubeIndices.length, cubeVertexBuffer, cubeColorBuffer, cubeIndexBuffer));
+    let obj = new SceneObject(track, sg.drawCube());
     scene.addObject(obj);
 
     scene.cameraOrientationTrack = new Track();
@@ -101,5 +99,4 @@ function initScene1()
     scene.cameraLocationTrack.addInterpolationPoint([0, 0, 10], 1e4);
 
     world.addScene(scene);
-    */
 }
